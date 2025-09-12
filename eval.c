@@ -12,11 +12,6 @@ typedef struct {
     };
 } Token;
 
-struct Node {
-    int data;
-    struct Node* next;
-};
-
 typedef struct {
     int arr[MAX_STACK_SIZE];
     int top;
@@ -26,17 +21,12 @@ void initialize(Stack *stack) {
     stack->top = -1;
 }
 
-int get_top(Stack *stack) {
-    return stack->arr[stack->top];
-}
-
 int pop(Stack *stack) {
     if (stack->top == -1) {
         printf("Stack underflow\n");
         return -1;
     }
-    int popped = stack->arr[stack->top];
-    stack->top--;
+    int popped = stack->arr[stack->top--];
     return popped;
 }
 
@@ -70,6 +60,8 @@ int main() {
             }
             token_array[token_count].is_operator = 0;
             token_array[token_count].value = num;
+            token_count++;
+            continue;
         }
         else {
             if (input[i] == '+') {
@@ -92,14 +84,13 @@ int main() {
                 printf("Invalid characters in input string, please use only '+', '-', '*' or '/'.\n");
                 return 1;
             }
-            i++;
         }
+        i++;
         token_count++;
     }
     token_array[token_count].is_operator = -1;
 
     Stack stack;
-
     initialize(&stack);
 
     for (int i=0; token_array[i].is_operator != -1; ) {
@@ -127,11 +118,19 @@ int main() {
                 int res = a / b;
                 push(&stack, res);
             }
+            else {
+                perror("Error parsing tokens\n");
+                return -1;
+            }
         }
         i++;
     }
 
-    printf("Result: %d\n", stack.arr[stack.top]);
-
+    if (stack.top == 0) {
+        printf("Result: %d\n", stack.arr[stack.top]);
+    }
+    else {
+        printf("Error evaluating expression\n");
+    }
     return 0;
 }
