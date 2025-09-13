@@ -12,13 +12,13 @@ typedef struct {
     };
 } Token;
 
-struct Node {
+typedef struct Node {
     int data;
     struct Node* next;
-};
+} Node;
 
-void push(struct Node** head, int data) {
-    struct Node* new = (struct Node*)malloc(sizeof(struct Node));
+void push(Node** head, int data) {
+    Node* new = (Node*)malloc(sizeof(Node));
 
     if(new == NULL) {
         printf("Failed to allocate memory\n");
@@ -37,12 +37,12 @@ void push(struct Node** head, int data) {
     *head = new;
 }
 
-int pop(struct Node** head) {
+int pop(Node** head) {
     if (*head == NULL) {
         printf("Stack underflow\n");
         return 0;
     }
-    struct Node* popped = *head;
+    Node* popped = *head;
     int data = popped->data;
     *head = (*head)->next;
     free(popped);
@@ -101,7 +101,7 @@ int main() {
     }
     token_array[token_count].is_operator = -1;
 
-    struct Node* head = NULL;
+    Node* head = NULL;
 
     for (int i=0; token_array[i].is_operator != -1; ) {
         if (token_array[i].is_operator == 0) {
