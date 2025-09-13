@@ -26,7 +26,6 @@ void push(struct Node** head, int data) {
     }
 
     new->data = data;
-    new->next = NULL;
 
     // If stack is empty, set the new node as the head
     if(*head == NULL){
@@ -103,32 +102,32 @@ int main() {
     }
     token_array[token_count].is_operator = -1;
 
-    struct Node* stack = NULL;
+    struct Node* head = NULL;
 
     for (int i=0; token_array[i].is_operator != -1; ) {
         if (token_array[i].is_operator == 0) {
-            push(&stack, token_array[i].value);
+            push(&head, token_array[i].value);
         }
         else {
             if (token_array[i].op == '+') {
-                int res = pop(&stack) + pop(&stack);
-                push(&stack, res);
+                int res = pop(&head) + pop(&head);
+                push(&head, res);
             }
             else if (token_array[i].op == '-') {
-                int b = pop(&stack);
-                int a = pop(&stack);
+                int b = pop(&head);
+                int a = pop(&head);
                 int res = a - b;
-                push(&stack, res);
+                push(&head, res);
             }
             else if (token_array[i].op == '*') {
-                int res = pop(&stack) * pop(&stack);
-                push(&stack, res);
+                int res = pop(&head) * pop(&head);
+                push(&head, res);
             }
             else if (token_array[i].op == '/') {
-                int b = pop(&stack);
-                int a = pop(&stack);
+                int b = pop(&head);
+                int a = pop(&head);
                 int res = a / b;
-                push(&stack, res);
+                push(&head, res);
             }
             else {
                 printf("Error parsing tokens\n");
@@ -138,8 +137,8 @@ int main() {
         i++;
     }
 
-    if (stack->next == NULL) {
-        printf("Result: %d\n", stack->data);
+    if (head->next == NULL) {
+        printf("Result: %d\n", head->data);
     }
     else {
         printf("Error evaluating expression\n");
