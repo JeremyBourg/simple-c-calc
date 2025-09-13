@@ -1,8 +1,8 @@
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define MAX_INPUT 100
-#define MAX_STACK_SIZE 100
 
 typedef struct {
     int is_operator;
@@ -12,31 +12,44 @@ typedef struct {
     };
 } Token;
 
-typedef struct {
-    int arr[MAX_STACK_SIZE];
-    int top;
-} Stack;
+struct Node {
+    int data;
+    struct Node* next;
+};
 
-void initialize(Stack *stack) {
-    stack->top = -1;
-}
+void push(struct Node** head, int data) {
+    struct Node* new = (struct Node*)malloc(sizeof(struct Node));
 
-int pop(Stack *stack) {
-    if (stack->top == -1) {
-        printf("Stack underflow\n");
-        return -1;
-    }
-    int popped = stack->arr[stack->top--];
-    return popped;
-}
-
-void push(Stack *stack, int value) {
-    if (stack->top == MAX_STACK_SIZE - 1) {
-        printf("Stack overflow\n");
+    if(new == NULL) {
+        printf("Failed to allocate memory\n");
         return;
     }
-    stack->arr[++stack->top] = value;
+
+    new->data = data;
+    new->next = NULL;
+
+    // If stack is empty, set the new node as the head
+    if(*head == NULL){
+        *head = new;
+        return;
+    }
+
+    new->next = *head;
+    *head = new;
 }
+
+int pop(struct Node** head) {
+    if (*head == NULL) {
+        printf("Stack underflow\n");
+        return 0;
+    }
+    struct Node* popped = *head;
+    int data = popped->data;
+    *head = (*head)->next;
+    free(popped);
+    return data;
+}
+
 
 int main() {
     char input[MAX_INPUT];
@@ -90,8 +103,7 @@ int main() {
     }
     token_array[token_count].is_operator = -1;
 
-    Stack stack;
-    initialize(&stack);
+    struct Node* stack = NULL;
 
     for (int i=0; token_array[i].is_operator != -1; ) {
         if (token_array[i].is_operator == 0) {
@@ -119,15 +131,15 @@ int main() {
                 push(&stack, res);
             }
             else {
-                perror("Error parsing tokens\n");
+                printf("Error parsing tokens\n");
                 return -1;
             }
         }
         i++;
     }
 
-    if (stack.top == 0) {
-        printf("Result: %d\n", stack.arr[stack.top]);
+    if (stack->next == NULL) {
+        printf("Result: %d\n", stack->data);
     }
     else {
         printf("Error evaluating expression\n");
