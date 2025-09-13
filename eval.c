@@ -108,29 +108,29 @@ int main() {
             push(&head, token_array[i].value);
         }
         else {
+            if (head == NULL || head->next == NULL) {
+                printf("Invalid expression\nErroneous token: %c\n", token_array[i].op);
+                return -1;
+            }
+
+            int b = pop(&head);
+            int a = pop(&head);
+
             if (token_array[i].op == '+') {
-                int res = pop(&head) + pop(&head);
-                push(&head, res);
+                push(&head, a + b);
             }
             else if (token_array[i].op == '-') {
-                int b = pop(&head);
-                int a = pop(&head);
-                int res = a - b;
-                push(&head, res);
+                push(&head, a - b);
             }
             else if (token_array[i].op == '*') {
-                int res = pop(&head) * pop(&head);
-                push(&head, res);
+                push(&head, a * b);
             }
             else if (token_array[i].op == '/') {
-                int b = pop(&head);
-                int a = pop(&head);
-                if (!b){
+                if (b == 0){
                     printf("Cannot divide by 0\n");
                     return -1;
                 }
-                int res = a / b;
-                push(&head, res);
+                push(&head, a / b);
             }
             else {
                 printf("Error parsing tokens\n");
