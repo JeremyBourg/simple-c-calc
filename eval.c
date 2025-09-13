@@ -49,7 +49,6 @@ int pop(struct Node** head) {
     return data;
 }
 
-
 int main() {
     char input[MAX_INPUT];
     Token token_array[100];
@@ -126,6 +125,10 @@ int main() {
             else if (token_array[i].op == '/') {
                 int b = pop(&head);
                 int a = pop(&head);
+                if (!b){
+                    printf("Cannot divide by 0\n");
+                    return -1;
+                }
                 int res = a / b;
                 push(&head, res);
             }
@@ -137,7 +140,7 @@ int main() {
         i++;
     }
 
-    if (head->next == NULL) {
+    if (head != NULL && head->next == NULL) {
         printf("Result: %d\n", head->data);
     }
     else {
