@@ -18,7 +18,7 @@ typedef struct Node {
 } Node;
 
 void push(Node** head, int data) {
-    Node* new = (Node*)malloc(sizeof(Node));
+    Node* new = malloc(sizeof(Node));
 
     if(new == NULL) {
         printf("Failed to allocate memory\n");
@@ -75,26 +75,8 @@ int main() {
             continue;
         }
         else {
-            if (input[i] == '+') {
-                token_array[token_count].is_operator = 1;
-                token_array[token_count].op = '+';
-            }
-            else if (input[i] == '/') {
-                token_array[token_count].is_operator = 1;
-                token_array[token_count].op = '/';
-            }
-            else if (input[i] == '*') {
-                token_array[token_count].is_operator = 1;
-                token_array[token_count].op = '*';
-            }
-            else if (input[i] == '-') {
-                token_array[token_count].is_operator = 1;
-                token_array[token_count].op = '-';
-            }
-            else {
-                printf("Invalid characters in input string, please use only '+', '-', '*' or '/'.\n");
-                return 1;
-            }
+            token_array[token_count].is_operator = 1;
+            token_array[token_count].op = input[i];
         }
         i++;
         token_count++;
