@@ -1,51 +1,10 @@
 #include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
+#include "common.h"
 
 #define MAX_INPUT 100
 
-typedef struct {
-    int is_operator;
-    union {
-        char op;
-        int value;
-    };
-} Token;
-
-typedef struct Node {
-    Token data;
-    struct Node* next;
-} Node;
-
 int is_empty(Node** head) { return *head == NULL; }
-
-void push(Node** head, Token data) {
-    Node* new = malloc(sizeof(Node));
-
-    if(new == NULL) {
-        printf("Failed to allocate memory\n");
-        return;
-    }
-
-    new->data = data;
-
-    // If stack is empty, set the new node as the head
-    if(*head == NULL){
-        *head = new;
-        return;
-    }
-
-    new->next = *head;
-    *head = new;
-}
-
-Token pop(Node** head) {
-    Node* popped = *head;
-    Token data = popped->data;
-    *head = (*head)->next;
-    free(popped);
-    return data;
-}
 
 int precedence(char operator) {
     if(operator == '+' || operator == '-') {
@@ -82,7 +41,7 @@ int main() {
     Token token_array[MAX_INPUT];
     int token_count = 0;
 
-    Node* output = NULL;
+    char output[MAX_INPUT] = "";
     Node* operators = NULL;
 
     printf("Enter expression:");
@@ -120,10 +79,14 @@ int main() {
 
     for(int i=0; i<token_count; i++) {
         if (token_array[i].is_operator == 0) {
-            push(&output, token_array[i]);
+			char str[16];
+			sprintf(str, "%d", token_array[i].value);
+			strcat(output, str);
         }
         else if (token_array[i].op == '(') {
-            push(&output, token_array[i]);
+			char str[16];
+			sprintf(str, "%c", token_array[i].op);
+			strcat(output, str);
         }
         else if (token_array[i].op == ')') {
             while (operators->data.op != '(') {
@@ -132,7 +95,9 @@ int main() {
                     return 1;
                 }
                 Token t = pop(&operators);
-                push(&output, t);
+				char str[16];
+				sprintf(str, "%c", t.op);
+				strcat(output, str);
             }
             if (operators->data.op == '(') {
                 pop(&operators);
@@ -145,7 +110,9 @@ int main() {
         else {
 			while (operators != NULL && operators->data.op != '(' && precedencecmp(token_array[i].op, operators->data.op) == 1) {
 				Token t = pop(&operators);
-				push(&output, t);
+				char str[16];
+				sprintf(str, "%c", t.op);
+				strcat(output, str);
 			}
             push(&operators, token_array[i]);
         }
@@ -156,78 +123,10 @@ int main() {
             return 1;
         }
         Token t = pop(&operators);
-        push(&output, t);
+		char str[16];
+		sprintf(str, "%c", t.op);
+		strcat(output, str);
     }
 
-	Node* expr = NULL;
-
-	while(output != NULL) {
-		push(&expr, pop(&output));
-	}
-
-    Node* head = NULL;
-
-	while (expr != NULL) {
-        if (expr->data.is_operator == 0) {
-            push(&head, pop(&expr));
-        }
-        else {
-            if (head == NULL) {
-                printf("Invalid expression\nErroneous token: %c\n", pop(&expr).op);
-                return -1;
-            }
-			if (head->next == NULL) {
-				pop(&expr);
-				if(expr != NULL) {
-					printf("Invalid expression\nErroneous token: %c\n", pop(&expr).op);
-					return -1;
-				}
-				continue;
-			}
-
-            int b = pop(&head).value;
-            int a = pop(&head).value;
-
-            if (expr->data.op == '+') {
-				Token res;
-				res.is_operator = 0;
-				res.value = a + b;
-                push(&head, res);
-            }
-            else if (expr->data.op == '-') {
-				Token res;
-				res.is_operator = 0;
-				res.value = a - b;
-                push(&head, res);
-            }
-            else if (expr->data.op == '*') {
-				Token res;
-				res.is_operator = 0;
-				res.value = a * b;
-                push(&head, res);
-            }
-            else if (expr->data.op == '/') {
-                if (b == 0){
-                    printf("Cannot divide by 0\n");
-                    return -1;
-                }
-				Token res;
-				res.is_operator = 0;
-				res.value = a / b;
-                push(&head, res);
-            }
-            else {
-                printf("Error parsing tokens\n");
-                return -1;
-            }
-        }
-    }
-
-    if (head != NULL && head->next == NULL) {
-        printf("Result: %d\n", head->data.value);
-    }
-    else {
-        printf("Error evaluating expression\n");
-    }
     return 0;
 }

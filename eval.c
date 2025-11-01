@@ -1,53 +1,8 @@
 #include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
+
+#include "common.h"
 
 #define MAX_INPUT 100
-
-typedef struct {
-    int is_operator;
-    union {
-        char op;
-        int value;
-    };
-} Token;
-
-typedef struct Node {
-    int data;
-    struct Node* next;
-} Node;
-
-void push(Node** head, int data) {
-    Node* new = malloc(sizeof(Node));
-
-    if(new == NULL) {
-        printf("Failed to allocate memory\n");
-        return;
-    }
-
-    new->data = data;
-
-    // If stack is empty, set the new node as the head
-    if(*head == NULL){
-        *head = new;
-        return;
-    }
-
-    new->next = *head;
-    *head = new;
-}
-
-int pop(Node** head) {
-    if (*head == NULL) {
-        printf("Stack underflow\n");
-        return 0;
-    }
-    Node* popped = *head;
-    int data = popped->data;
-    *head = (*head)->next;
-    free(popped);
-    return data;
-}
 
 int main() {
     char input[MAX_INPUT];
@@ -95,8 +50,8 @@ int main() {
                 return -1;
             }
 
-            int b = pop(&head);
-            int a = pop(&head);
+            int b = pop(&head).value;
+            int a = pop(&head).value;
 
             if (token_array[i].op == '+') {
                 push(&head, a + b);
@@ -130,3 +85,73 @@ int main() {
     }
     return 0;
 }
+	// Node* expr = NULL;
+	//
+	// while(output != NULL) {
+	// 	push(&expr, pop(&output));
+	// }
+	//
+	//    Node* head = NULL;
+	//
+	// while (expr != NULL) {
+	//        if (expr->data.is_operator == 0) {
+	//            push(&head, pop(&expr));
+	//        }
+	//        else {
+	//            if (head == NULL) {
+	//                printf("Invalid expression\nErroneous token: %c\n", pop(&expr).op);
+	//                return -1;
+	//            }
+	// 		if (head->next == NULL) {
+	// 			pop(&expr);
+	// 			if(expr != NULL) {
+	// 				printf("Invalid expression\nErroneous token: %c\n", pop(&expr).op);
+	// 				return -1;
+	// 			}
+	// 			continue;
+	// 		}
+	//
+	//            int b = pop(&head).value;
+	//            int a = pop(&head).value;
+	//
+	//            if (expr->data.op == '+') {
+	// 			Token res;
+	// 			res.is_operator = 0;
+	// 			res.value = a + b;
+	//                push(&head, res);
+	//            }
+	//            else if (expr->data.op == '-') {
+	// 			Token res;
+	// 			res.is_operator = 0;
+	// 			res.value = a - b;
+	//                push(&head, res);
+	//            }
+	//            else if (expr->data.op == '*') {
+	// 			Token res;
+	// 			res.is_operator = 0;
+	// 			res.value = a * b;
+	//                push(&head, res);
+	//            }
+	//            else if (expr->data.op == '/') {
+	//                if (b == 0){
+	//                    printf("Cannot divide by 0\n");
+	//                    return -1;
+	//                }
+	// 			Token res;
+	// 			res.is_operator = 0;
+	// 			res.value = a / b;
+	//                push(&head, res);
+	//            }
+	//            else {
+	//                printf("Error parsing tokens\n");
+	//                return -1;
+	//            }
+	//        }
+	//    }
+	//
+	//    if (head != NULL && head->next == NULL) {
+	//        printf("Result: %d\n", head->data.value);
+	//    }
+	//    else {
+	//        printf("Error evaluating expression\n");
+	//    }
