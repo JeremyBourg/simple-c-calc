@@ -52,10 +52,10 @@ int precedence(char operator) {
         return 1;
     }
     else if(operator == '*' || operator == '/') {
-        return 1;
+        return 2;
     }
     else if(operator == '^') {
-        return 2;
+        return 3;
     }
 
     return -1;
@@ -159,19 +159,75 @@ int main() {
         push(&output, t);
     }
 
+	Node* expr = NULL;
 
-    while (output != NULL) {
-		if(output->data.is_operator == 0) {
-			Token tmp = pop(&output);
-			printf("Token: %d\n", tmp.value);
-		}
-		else if(output->data.is_operator == 1) {
-			Token tmp = pop(&output);
-			printf("Token: %c\n", tmp.op);
-		}
-		else {
-			break;
-		}
+	while(output != NULL) {
+		push(&expr, pop(&output));
+	}
+
+    Node* head = NULL;
+
+	while (expr != NULL) {
+        if (expr->data.is_operator == 0) {
+            push(&head, pop(&expr));
+        }
+        else {
+            if (head == NULL) {
+                printf("Invalid expression\nErroneous token: %c\n", pop(&expr).op);
+                return -1;
+            }
+			if (head->next == NULL) {
+				pop(&expr);
+				if(expr != NULL) {
+					printf("Invalid expression\nErroneous token: %c\n", pop(&expr).op);
+					return -1;
+				}
+				continue;
+			}
+
+            int b = pop(&head).value;
+            int a = pop(&head).value;
+
+            if (expr->data.op == '+') {
+				Token res;
+				res.is_operator = 0;
+				res.value = a + b;
+                push(&head, res);
+            }
+            else if (expr->data.op == '-') {
+				Token res;
+				res.is_operator = 0;
+				res.value = a - b;
+                push(&head, res);
+            }
+            else if (expr->data.op == '*') {
+				Token res;
+				res.is_operator = 0;
+				res.value = a * b;
+                push(&head, res);
+            }
+            else if (expr->data.op == '/') {
+                if (b == 0){
+                    printf("Cannot divide by 0\n");
+                    return -1;
+                }
+				Token res;
+				res.is_operator = 0;
+				res.value = a / b;
+                push(&head, res);
+            }
+            else {
+                printf("Error parsing tokens\n");
+                return -1;
+            }
+        }
+    }
+
+    if (head != NULL && head->next == NULL) {
+        printf("Result: %d\n", head->data.value);
+    }
+    else {
+        printf("Error evaluating expression\n");
     }
     return 0;
 }
