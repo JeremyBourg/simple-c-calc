@@ -82,8 +82,8 @@ int main() {
     Token token_array[MAX_INPUT];
     int token_count = 0;
 
-    Node* output;
-    Node* operators;
+    Node* output = NULL;
+    Node* operators = NULL;
 
     printf("Enter expression:");
     fgets(input, MAX_INPUT, stdin);
@@ -118,10 +118,6 @@ int main() {
 		return 0;
 	}
 
-	while (operators != NULL) {
-		pop(&operators);
-	}
-
     for(int i=0; i<token_count; i++) {
         if (token_array[i].is_operator == 0) {
             push(&output, token_array[i]);
@@ -147,12 +143,9 @@ int main() {
             }
         }
         else {
-			if (operators != NULL) {
-				printf("%c\n", operators->data.op);
-				while (operators->data.op != '(' && precedencecmp(token_array[i].op, operators->data.op) == 1) {
-					Token t = pop(&operators);
-					push(&output, t);
-				}
+			while (operators != NULL && operators->data.op != '(' && precedencecmp(token_array[i].op, operators->data.op) == 1) {
+				Token t = pop(&operators);
+				push(&output, t);
 			}
             push(&operators, token_array[i]);
         }
